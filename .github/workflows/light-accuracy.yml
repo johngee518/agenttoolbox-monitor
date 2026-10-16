@@ -1,0 +1,19 @@
+name: Agent Toolbox light check
+# No-browser probe of https://agenttoolbox.net. A failed job makes GitHub email the repo owner.
+on:
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: light-check
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run light check
+        run: python3 scripts/light_accuracy.py
