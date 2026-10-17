@@ -16,13 +16,13 @@ Games are hosted by you on third-party sites; we only link to them and never hos
 We review submissions by hand and may decline, edit the listing text of, or remove any listing at any time at our sole discretion, without notice.
 Your contact email is used only to reach you about your submission (and for the newsletter only if you opt in).
 You grant us permission to display your title, description, handle and screenshot in the gallery.
-To request removal, email hello@agenttoolbox.net .
+To request removal, email [email protected] .
 Paid plans Pro API plans are billed via Stripe on a recurring basis until cancelled.
 Contact us to cancel.
 Fees are non-refundable except where required by law.
 Featured directory listings There are 25 Featured spots.
 Spots 1-12 are priced at the base rate for our current audience tier and spots 13-25 at the base rate plus 20%; current prices are shown on the sponsor page .
-When all spots are taken, new buyers join a waitlist (email agenttoolbox.net@gmail.com) and freed spots are offered in the order people joined.
+When all spots are taken, new buyers join a waitlist (email [email protected] ) and freed spots are offered in the order people joined.
 Each Featured spot runs for 30 days from the date your payment is approved.
 You can buy a single 30-day period, which simply ends, or choose auto-renew, which renews monthly at the price you locked in until you cancel.
 If you don't renew, any later purchase is at the then-current base rate.
@@ -32,4 +32,4 @@ All Featured purchases are final and non-refundable , except where required by l
 Limitation of liability To the maximum extent permitted by law, Agent Toolbox is not liable for indirect or consequential damages, and total liability is limited to amounts you paid us in the prior 12 months.
 Changes We may update these terms.
 Continued use means acceptance.
-Contact: hello@agenttoolbox.net .
+Contact: [email protected] .
