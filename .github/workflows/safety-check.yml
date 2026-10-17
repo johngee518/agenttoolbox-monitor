@@ -56,6 +56,7 @@ jobs:
           SITE_REPO_OK: ${{ steps.site.outcome == 'success' && secrets.SITE_REPO_TOKEN != '' }}
           GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
           SITE_DIR: ${{ github.workspace }}/site
+          SITE_CHECKOUT: ${{ steps.site.outcome }}
         run: python3 scripts/safety_check.py
 
       - name: Commit baseline (update-baseline or first run only)

@@ -24,6 +24,9 @@ MODE = os.environ.get("MODE", "normal").strip() or "normal"
 SITE_DIR = Path(os.environ.get("SITE_DIR", ROOT / "site"))
 SB_KEY = os.environ.get("GOOGLE_SAFE_BROWSING_KEY", "").strip()
 SITE_TOKEN_AVAILABLE = os.environ.get("SITE_REPO_OK", "") == "true"
+# a failed actions/checkout leaves an empty git repo behind, so require a successful step AND real files
+SITE_OK = os.environ.get("SITE_CHECKOUT", "success" if (SITE_DIR / "package.json").exists() else "") == "success" \
+    and (SITE_DIR / "package.json").exists()
 NOW = dt.datetime.now(dt.timezone.utc)
 FULL_LINKS = MODE in ("full", "simulate-failure") or NOW.hour % CFG.get("link_scan_every_hours", 6) == 0 \
     or os.environ.get("FORCE_LINKS") == "1"
@@ -383,7 +386,7 @@ def check_secrets():
     S = "7. Exposed secrets"
     # 7a gitleaks on repos
     targets = [("monitor repo", ROOT)]
-    if (SITE_DIR / ".git").exists(): targets.append(("site repo johngee518/agenttoolbox-site", SITE_DIR))
+    if SITE_OK: targets.append(("site repo johngee518/agenttoolbox-site", SITE_DIR))
     else: rec(S, "SKIP", "site repo not checked out: add the SITE_REPO_TOKEN secret (read-only fine-grained token, see README)")
     for name, d in targets:
         rep = OUT / f"gitleaks-{abs(hash(name))}.json"
@@ -428,7 +431,7 @@ def check_secrets():
 def check_npm():
     S = "8. npm audit"
     lock = SITE_DIR / "package-lock.json"
-    if not lock.exists():
+    if not SITE_OK or not lock.exists():
         rec(S, "SKIP", "site package-lock.json unavailable (needs SITE_REPO_TOKEN)"); return
     p = subprocess.run(["npm", "audit", "--package-lock-only", "--json", "--omit=dev"], cwd=SITE_DIR,
                        capture_output=True, text=True, timeout=180)
@@ -464,7 +467,7 @@ def check_submissions():
                     urls.setdefault(u.rstrip(".,"), f"{label} #{it['number']}")
     else:
         rec(S, "SKIP", "submission issues not readable without SITE_REPO_TOKEN")
-    for f in sorted(SITE_DIR.glob("data/*submissions*.jsonl")) if SITE_DIR.exists() else []:
+    for f in sorted(SITE_DIR.glob("data/*submissions*.jsonl")) if SITE_OK else []:
         for line in f.read_text().splitlines():
             for u in re.findall(r"https?://[^\s\"'\\]+", line):
                 urls.setdefault(u.rstrip(".,"), f"{f.name}")
