@@ -52,7 +52,6 @@ jobs:
       - name: Run safety checks
         id: check
         env:
-          GOOGLE_SAFE_BROWSING_KEY: ${{ secrets.GOOGLE_SAFE_BROWSING_KEY }}
           SITE_REPO_OK: ${{ steps.site.outcome == 'success' && secrets.SITE_REPO_TOKEN != '' }}
           GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
           SITE_DIR: ${{ github.workspace }}/site

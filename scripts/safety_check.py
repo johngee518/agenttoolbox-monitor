@@ -22,7 +22,6 @@ BASE = CFG["base"].rstrip("/")
 HOST = urllib.parse.urlparse(BASE).hostname
 MODE = os.environ.get("MODE", "normal").strip() or "normal"
 SITE_DIR = Path(os.environ.get("SITE_DIR", ROOT / "site"))
-SB_KEY = os.environ.get("GOOGLE_SAFE_BROWSING_KEY", "").strip()
 SITE_TOKEN_AVAILABLE = os.environ.get("SITE_REPO_OK", "") == "true"
 # a failed actions/checkout leaves an empty git repo behind, so require a successful step AND real files
 SITE_OK = os.environ.get("SITE_CHECKOUT", "success" if (SITE_DIR / "package.json").exists() else "") == "success" \
@@ -166,37 +165,59 @@ def feed_hits(url_list):
         elif u.rstrip("/") in urls: hits.append((u, "OpenPhish phishing URL"))
     return hits
 
-def safe_browsing(url_list):
-    """Returns list of (url, threatType) or None if no key / error."""
-    if not SB_KEY: return None
-    out = []
-    for i in range(0, len(url_list), 400):
-        chunk = url_list[i:i + 400]
-        body = {"client": {"clientId": "agenttoolbox-monitor", "clientVersion": "1.0"},
-                "threatInfo": {"threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
-                               "platformTypes": ["ANY_PLATFORM"], "threatEntryTypes": ["URL"],
-                               "threatEntries": [{"url": u} for u in chunk]}}
-        r = http("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=" + urllib.parse.quote(SB_KEY),
-                 method="POST", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"}, timeout=20)
-        if r["status"] != 200:
-            raise RuntimeError(f"Safe Browsing API returned {r['status'] or r['error']}")
-        for m in json.loads(r["body"] or "{}").get("matches", []):
-            out.append((m["threat"]["url"], m["threatType"]))
-    return out
+# Google Safe Browsing via the keyless Transparency Report endpoint (same approach as
+# johngee518/jrg-safety-check check.py). Unofficial: errors/captchas only WARN, never fail.
+SB_TEXT = {1: "no unsafe content found", 2: "UNSAFE", 3: "SOME PAGES UNSAFE", 4: "no site-level verdict (check specific URLs)",
+           5: "hosts uncommon downloads", 6: "no data yet (normal for a new site)"}
+SB_DELAY_S = 1.5          # rate limit between lookups (sequential, never parallel)
+_sb_state = {"last": 0.0, "blocked": False}
+def transparency_sb(site, third_party=False):
+    """Returns (level, message). level PASS/FAIL, or WARN when the lookup is unavailable."""
+    if _sb_state["blocked"]:
+        return "WARN", "skipped (Google rate-limited earlier lookups this run)"
+    wait = SB_DELAY_S - (time.time() - _sb_state["last"])
+    if wait > 0: time.sleep(wait)
+    url = "https://transparencyreport.google.com/transparencyreport/api/v3/safebrowsing/status?site=" + urllib.parse.quote(site)
+    r = http(url, timeout=15, headers={"Accept": "*/*"})
+    _sb_state["last"] = time.time()
+    body = r["body"]
+    try:
+        data = json.loads(body.split("\n", 1)[1].strip()) if body.startswith(")]}'") else json.loads(body)
+        row = data[0]; code = row[1]; flags = row[2:7]
+    except Exception:
+        if r["status"] in (0, 302, 429, 503) or "google.com/sorry" in (r["final_url"] or "") + body[:2000]:
+            _sb_state["blocked"] = True
+        return "WARN", f"lookup unavailable (status {r['status'] or r['error']}); skipped this run"
+    if third_party and code == 3:
+        # big platforms that host user content (e.g. railway.com) often carry a standing "some pages unsafe"
+        # site-level verdict; that is not a hijack of the listed page, so warn instead of alerting every 6h
+        return "WARN", f"site-level verdict: {SB_TEXT[3]} (flags {flags}) - review the listing by hand"
+    if code in (2, 3, 5) or any(f is True for f in flags):
+        return "FAIL", f"flagged: {SB_TEXT.get(code, code)} (flags {flags})"
+    return "PASS", SB_TEXT.get(code, str(code))
+
+def sb_hosts(url_dict, section, label):
+    """Rate-limited host-level lookup for a {url: source} dict. Records FAIL per flagged host, one WARN summary."""
+    hosts = {}
+    for u, src in url_dict.items():
+        hn = (urllib.parse.urlparse(u).hostname or "").lower()
+        if hn: hosts.setdefault(hn, src)
+    flagged = unavailable = 0
+    for hn, src in sorted(hosts.items()):
+        lvl, msg = transparency_sb(hn, third_party=True)
+        if lvl == "FAIL": flagged += 1; rec(section, "FAIL", f"Google Safe Browsing: {hn} ({src}) {msg}")
+        elif lvl == "WARN" and "site-level" in msg: rec(section, "WARN", f"Google Safe Browsing: {hn} ({src}) {msg}")
+        elif lvl == "WARN": unavailable += 1
+    if unavailable:
+        rec(section, "WARN", f"Google Safe Browsing (Transparency Report) unavailable for {unavailable}/{len(hosts)} {label} hosts this run")
+    if hosts and not flagged and unavailable < len(hosts):
+        rec(section, "PASS", f"Google Safe Browsing: {len(hosts) - unavailable} {label} hosts clean")
 
 def check_malware():
     S = "4. Safe Browsing / malware"
     site_urls = [BASE + "/"] + [BASE + p for p in pages]
-    try:
-        sb = safe_browsing(site_urls)
-        if sb is None:
-            rec(S, "SKIP", "GOOGLE_SAFE_BROWSING_KEY secret not set - Google Safe Browsing lookup skipped (free key needed, see README)")
-        elif sb:
-            for u, t in sb: rec(S, "FAIL", f"Google Safe Browsing flags {u} as {t}")
-        else:
-            rec(S, "PASS", f"Google Safe Browsing: {len(site_urls)} site URLs clean")
-    except Exception as e:
-        rec(S, "WARN", f"Safe Browsing lookup error: {e}")
+    lvl, msg = transparency_sb(HOST)
+    rec(S, lvl, f"Google Safe Browsing (Transparency Report) for {HOST}: {msg}")
     hosts, urls, ok = feeds()
     if not ok:
         rec(S, "WARN", "free threat feeds (URLhaus, OpenPhish) could not be downloaded"); return
@@ -285,11 +306,7 @@ def check_outbound():
             bad += 1; rec(S, lvl, f"{u} ({urls[u]}): {msg}")
     hits = feed_hits(list(urls))
     for u, why in hits: rec(S, "FAIL", f"{u} ({urls[u]}) listed in {why}")
-    try:
-        sb = safe_browsing(list(urls))
-        for u, t in (sb or []): rec(S, "FAIL", f"Google Safe Browsing flags {u} as {t}")
-    except Exception as e:
-        rec(S, "WARN", f"Safe Browsing lookup error: {e}")
+    sb_hosts(urls, S, "outbound")
     rec(S, "PASS", f"scanned {len(urls)} outbound URLs, {len(urls) - bad} clean")
 
 # ---------------------------------------------------------------- 6. unexpected changes
@@ -408,7 +425,9 @@ def check_secrets():
     # 7b live JS bundles
     js = set()
     for p, r in pages.items():
-        for s in re.findall(r'(?:src|href)="(/_next/static/[^"]+\.js)"', r["body"]): js.add(s)
+        for s in re.findall(r'(?:src|href)="([^"]+\.js(?:\?[^"]*)?)"', r["body"]):
+            u = urllib.parse.urlparse(urllib.parse.urljoin(BASE + "/", html.unescape(s)))
+            if u.hostname == HOST: js.add(u.path + (("?" + u.query) if u.query else ""))
     hits = []
     def scan(path):
         r = http(BASE + path, timeout=20, max_bytes=5_000_000)
@@ -476,9 +495,7 @@ def check_submissions():
     if not urls:
         rec(S, "SKIP", "no pending submission URLs to scan (approved ones are covered by the outbound link scan)"); return
     for u, why in feed_hits(list(urls)): rec(S, "FAIL", f"submission {u} ({urls[u]}) listed in {why} - reject it")
-    try:
-        for u, t in (safe_browsing(list(urls)) or []): rec(S, "FAIL", f"submission {u} ({urls[u]}) flagged by Safe Browsing as {t} - reject it")
-    except Exception as e: rec(S, "WARN", f"Safe Browsing error: {e}")
+    if FULL_LINKS: sb_hosts(urls, S, "submission")
     with cf.ThreadPoolExecutor(8) as ex:
         res = dict(zip(urls, ex.map(probe, urls)))
     for u, (lvl, msg) in res.items():
