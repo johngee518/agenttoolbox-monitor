@@ -7,7 +7,9 @@ Checks: uptime, SSL expiry > 14 days, security headers (warnings; set `strict_he
 in `safety/config.json` to make them failures), Google Safe Browsing (keyless Transparency Report lookup, rate-limited,
 warn-only on lookup errors) plus free URLhaus/OpenPhish feeds, outbound directory links (DNS, HTTP errors after retry, cross-domain redirects, parked/for-sale
 pages), page-text change detection vs `safety/baseline.json`, checkout links vs allowlist, gitleaks + live JS bundle
-secret scan, npm audit (site repo, needs `SITE_REPO_TOKEN`), and pending community submissions.
+secret scan, npm audit (site repo, needs `SITE_REPO_TOKEN`), pending community submissions, and **listed** community
+game/tool URL rechecks (every 6h full scan: HTTP/DNS/hijack/parked/allowlist for games/malware; weekly content
+fingerprint in `safety/listing_baseline.json` warns "re-review needed" on change, never fails).
 
 Any failure fails the job and opens/updates one open issue labeled `safety-alert` (auto-closed when passing).
 - Detect an open alert: `gh issue list -R johngee518/agenttoolbox-monitor -l safety-alert --state open --json number,title,updatedAt,url`

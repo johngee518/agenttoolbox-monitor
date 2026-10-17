@@ -23,5 +23,19 @@
   "checkout_allowlist_extra": [
     "https://buy.stripe.com/9B67sL9xcdGZ0si2lM7kc09",
     "https://buy.stripe.com/cNieVdaBg9qJ3Eu1hI7kc0a"
-  ]
+  ],
+  "listing_allowlist": [
+    "itch.io",
+    "codepen.io",
+    "github.io",
+    "glitch.me",
+    "replit.app",
+    "netlify.app",
+    "vercel.app",
+    "pages.dev",
+    "scratch.mit.edu",
+    "huggingface.co",
+    "hf.space"
+  ],
+  "listing_fingerprint_weekday": 0
 }

@@ -7,9 +7,11 @@ Writes a Markdown report to $GITHUB_STEP_SUMMARY (if set) and out/summary.md,
 plus out/status.json (fail list + signature) for the alert-issue step.
 
 Modes (env MODE): normal | full | update-baseline | simulate-failure
-  full             -> also runs the outbound link scan (normally every 6h)
-  update-baseline  -> re-records page-text hashes + checkout allowlist, never alerts on them
+  full             -> also runs the outbound link scan + listed community recheck (normally every 6h)
+  update-baseline  -> re-records page-text hashes + checkout allowlist + listing fingerprints
   simulate-failure -> adds a deliberately broken URL to prove alerting works
+Listed community games/tools are rechecked on every full scan (HTTP/DNS/redirect/parked/
+allowlist for games/malware). Weekly content fingerprints WARN on change (re-review), never FAIL.
 Never prints secret values: secret findings are redacted to rule + location.
 """
 import concurrent.futures as cf, datetime as dt, hashlib, html, json, os, re, socket, ssl
@@ -505,10 +507,197 @@ def check_submissions():
             rec(S, "WARN", f"submission {u} ({urls[u]}): {msg}")
     rec(S, "PASS", f"scanned {len(urls)} pending submission URLs")
 
+# ---------------------------------------------------------------- 10. listed community games + tools (post-approval recheck)
+# John's rule: nothing stays listed without periodic rechecks. URLs come from the live public site
+# (/api/directory community entries + /games play links / any games JSON). Allowlist matches gamesconf.js
+# HOSTS plus huggingface.co / hf.space. Allowlist FAIL applies to games only; community tools may live on
+# any public https host (same as the submit form), so tools skip the host allowlist.
+DEFAULT_LISTING_ALLOWLIST = [
+    "itch.io", "codepen.io", "github.io", "glitch.me", "replit.app", "netlify.app",
+    "vercel.app", "pages.dev", "scratch.mit.edu", "huggingface.co", "hf.space",
+]
+WEEKLY_FP = (
+    (FULL_LINKS or MODE == "update-baseline")
+    and (
+        NOW.weekday() == CFG.get("listing_fingerprint_weekday", 0)
+        or os.environ.get("FORCE_LISTING_FP") == "1"
+        or MODE == "update-baseline"
+    )
+)
+
+def listing_allowlist():
+    """Prefer HOSTS from the site source (gamesconf.js) when checked out; always include HF hosts."""
+    hosts = list(CFG.get("listing_allowlist") or DEFAULT_LISTING_ALLOWLIST)
+    if SITE_OK:
+        for rel in ("gamesconf.js", "community.js"):
+            f = SITE_DIR / rel
+            if not f.exists():
+                continue
+            raw = f.read_text(errors="replace")
+            for key in ("HOSTS", "EMBED_HOSTS"):
+                m = re.search(rf"(?:export\s+)?(?:const|let|var)\s+{key}\s*=\s*\[([^\]]+)\]", raw)
+                if not m:
+                    continue
+                found = re.findall(r"['\"]([a-z0-9.-]+)['\"]", m.group(1), flags=re.I)
+                for h in found:
+                    if h not in hosts:
+                        hosts.append(h)
+    # Ensure the task's HF hosts are always present even if an older gamesconf is checked out
+    for h in ("huggingface.co", "hf.space"):
+        if h not in hosts:
+            hosts.append(h)
+    return hosts
+
+def host_on_allowlist(url, allow):
+    hn = (urllib.parse.urlparse(url).hostname or "").lower()
+    if not hn:
+        return False
+    return any(hn == d or hn.endswith("." + d) for d in allow)
+
+def listed_community_urls():
+    """Return {url: label} for approved community tools + games from live public data."""
+    urls = {}
+    # Community tools: /api/directory entries marked community:true (added on approve)
+    r = http(BASE + "/api/directory", headers={"Accept": "application/json"})
+    try:
+        data = json.loads(r["body"])
+        if isinstance(data, list):
+            for t in data:
+                if t.get("community") and t.get("url"):
+                    urls[str(t["url"]).strip()] = f"community tool: {t.get('name', '?')}"
+    except Exception:
+        rec("10. Listed community", "WARN", f"/api/directory not parseable for community filter (status {r['status']})")
+
+    allow = listing_allowlist()
+    # Games JSON endpoints (none live yet; keep looking so a future /api/games just works)
+    for path in ("/api/games", "/games.json", "/data/games.json"):
+        gr = http(BASE + path, headers={"Accept": "application/json"}, timeout=15)
+        if gr["status"] != 200:
+            continue
+        try:
+            data = json.loads(gr["body"])
+        except Exception:
+            continue
+        items = data if isinstance(data, list) else data.get("games") or data.get("items") or []
+        if not isinstance(items, list):
+            continue
+        for g in items:
+            u = g.get("playUrl") or g.get("url")
+            if u:
+                urls[str(u).strip()] = f"community game: {g.get('title') or g.get('name') or '?'}"
+        break
+
+    # /games HTML: play links are external hrefs on allowlisted hosts, plus any "playUrl":"..." in RSC/JSON
+    gr = pages.get("/games") or http(BASE + "/games")
+    if gr["status"] == 200:
+        body = gr["body"]
+        for u in re.findall(r'"playUrl"\s*:\s*"(https://[^"\\]+)"', body):
+            u = html.unescape(u)
+            urls.setdefault(u, "community game")
+        for u in re.findall(r'href="(https://[^"#\s]+)"', body):
+            u = html.unescape(u)
+            hn = urllib.parse.urlparse(u).hostname or ""
+            if regdom(hn) == regdom(HOST):
+                continue
+            if host_on_allowlist(u, allow):
+                urls.setdefault(u, "community game")
+    return {u: lab for u, lab in urls.items() if u.startswith("https://")}
+
+def probe_listing(url, *, require_allowlist=False, allow=None):
+    """Like probe(), plus an optional host-allowlist FAIL for games."""
+    if require_allowlist and allow is not None and not host_on_allowlist(url, allow):
+        hn = urllib.parse.urlparse(url).hostname or "?"
+        return "FAIL", f"host off allowlist: {hn}"
+    return probe(url)
+
+def listing_page_fingerprint(url):
+    """SHA-256 of title + main text. Used weekly; changes are WARN (re-review), never FAIL."""
+    r = http(url, timeout=25, max_bytes=400_000)
+    if r["status"] == 0 or r["status"] >= 400:
+        time.sleep(3)
+        r = http(url, timeout=25, max_bytes=400_000)
+    if r["status"] == 0 or r["status"] >= 400:
+        return None, f"unreachable ({r['status'] or r['error']})"
+    body = r["body"]
+    tm = re.search(r"(?is)<title[^>]*>(.*?)</title>", body)
+    title = re.sub(r"\s+", " ", html.unescape(tm.group(1) if tm else "")).strip()[:300]
+    text = main_text(body, "")
+    blob = title + "\n" + text
+    return hashlib.sha256(blob.encode()).hexdigest(), title
+
+def check_listed_community():
+    S = "10. Listed community"
+    if not FULL_LINKS and MODE != "update-baseline":
+        rec(S, "SKIP", f"listed game/tool recheck runs with the full link scan (every {CFG.get('link_scan_every_hours', 6)}h) or mode=full")
+        return
+    urls = listed_community_urls()
+    if not urls:
+        rec(S, "SKIP", "no listed community games or community tools yet")
+        return
+
+    allow = listing_allowlist()
+    # Classify: games need allowlist; tools (label starts with community tool) do not
+    kinds = {}
+    for u, lab in urls.items():
+        kinds[u] = "game" if lab.startswith("community game") else "tool"
+
+    with cf.ThreadPoolExecutor(8) as ex:
+        futs = {
+            u: ex.submit(probe_listing, u, require_allowlist=(kinds[u] == "game"), allow=allow)
+            for u in urls
+        }
+        res = {u: f.result() for u, f in futs.items()}
+
+    bad = 0
+    for u, (lvl, msg) in sorted(res.items()):
+        if lvl != "PASS":
+            bad += 1
+            rec(S, lvl, f"{u} ({urls[u]}): {msg}")
+
+    hits = feed_hits(list(urls))
+    for u, why in hits:
+        rec(S, "FAIL", f"{u} ({urls[u]}) listed in {why}")
+
+    sb_hosts(urls, S, "listed community")
+
+    n_games = sum(1 for u in urls if kinds[u] == "game")
+    n_tools = len(urls) - n_games
+    rec(S, "PASS", f"rechecked {len(urls)} listed URLs ({n_games} games, {n_tools} community tools), {len(urls) - bad} clean; allowlist {', '.join(allow)}")
+
+    # Weekly content fingerprint: change => WARN "re-review needed", never FAIL
+    if not WEEKLY_FP:
+        rec(S, "SKIP", "weekly content fingerprint runs on weekday "
+            f"{CFG.get('listing_fingerprint_weekday', 0)} UTC during a full scan "
+            "(or FORCE_LISTING_FP=1 / mode=update-baseline)")
+        return
+
+    bpath = ROOT / "safety/listing_baseline.json"
+    base = json.loads(bpath.read_text()) if bpath.exists() else {"urls": {}}
+    new_urls = dict(base.get("urls") or {})
+    for u, lab in sorted(urls.items()):
+        h, title_or_err = listing_page_fingerprint(u)
+        if h is None:
+            rec(S, "WARN", f"{u} ({lab}): fingerprint skipped — {title_or_err}")
+            continue
+        title = title_or_err
+        old = (base.get("urls") or {}).get(u) or {}
+        entry = {"hash": h, "title": title, "kind": kinds[u], "label": lab, "updated": NOW.isoformat()}
+        new_urls[u] = entry
+        if MODE == "update-baseline" or not old.get("hash"):
+            rec(S, "PASS", f"{u} ({lab}): fingerprint baseline recorded ({h[:12]})")
+        elif old["hash"] == h:
+            rec(S, "PASS", f"{u} ({lab}): content unchanged ({h[:12]})")
+        else:
+            rec(S, "WARN", f"{u} ({lab}): content changed vs baseline ({old['hash'][:12]} -> {h[:12]}) — re-review needed"
+                + (f" (title now: {title[:80]})" if title else ""))
+    # Drop baselines for URLs no longer listed
+    new_urls = {u: v for u, v in new_urls.items() if u in urls}
+    bpath.write_text(json.dumps({"updated": NOW.isoformat(), "urls": new_urls}, indent=2) + "\n")
+
 # ---------------------------------------------------------------- run
 def main():
     for fn in (check_uptime, check_ssl, check_headers, check_malware, check_outbound, check_changes,
-               check_secrets, check_npm, check_submissions):
+               check_secrets, check_npm, check_submissions, check_listed_community):
         try: fn()
         except Exception as e: rec(fn.__name__, "FAIL", f"checker crashed: {type(e).__name__}: {e}"[:300])
     fails = [f"{s}: {m}" for s, l, m in results if l == "FAIL"]

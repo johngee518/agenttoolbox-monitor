@@ -61,7 +61,7 @@ jobs:
       - name: Commit baseline (update-baseline or first run only)
         if: always()
         run: |
-          git add safety/baseline.json safety/pages
+          git add safety/baseline.json safety/listing_baseline.json safety/pages
           if git diff --cached --quiet; then echo "baseline unchanged"; exit 0; fi
           git config user.name "agenttoolbox-safety-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
