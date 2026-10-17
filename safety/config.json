@@ -1,0 +1,27 @@
+{
+  "base": "https://agenttoolbox.net",
+  "site_repo": "johngee518/agenttoolbox-site",
+  "pages_required": ["/", "/directory", "/sponsor", "/pricing", "/tools", "/blog", "/games", "/terms"],
+  "pages_optional": ["/build", "/community"],
+  "simulated_failure_path": "/__safety_check_simulated_failure__",
+  "page_timeout_s": 15,
+  "page_slow_s": 5,
+  "ssl_min_days": 14,
+  "header_pages": ["/", "/sponsor"],
+  "strict_headers": false,
+  "fail_on_missing_headers": [],
+  "link_scan_every_hours": 6,
+  "outbound_link_pages": ["/directory", "/games", "/community"],
+  "outbound_ignore_domains": ["agenttoolbox.net", "stripe.com", "vercel.com", "nextjs.org", "x.com", "twitter.com", "kit.com", "convertkit.com", "google.com", "schema.org", "w3.org"],
+  "allowed_redirects": {},
+  "hash_pages": ["/", "/sponsor", "/pricing", "/terms"],
+  "text_ignore": {
+    "/": ["\\d+(\\.\\d+)?"]
+  },
+  "checkout_pages": ["/sponsor", "/pricing"],
+  "payment_host_allow_nonlink": ["stripe.com", "www.stripe.com", "js.stripe.com", "docs.stripe.com"],
+  "checkout_allowlist_extra": [
+    "https://buy.stripe.com/9B67sL9xcdGZ0si2lM7kc09",
+    "https://buy.stripe.com/cNieVdaBg9qJ3Eu1hI7kc0a"
+  ]
+}

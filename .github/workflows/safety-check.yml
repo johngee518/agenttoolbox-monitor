@@ -1,0 +1,96 @@
+name: Agent Toolbox safety check
+# Hourly $0 safety checker for https://agenttoolbox.net. See README "Safety check".
+# Any FAIL fails the job, writes the job summary, and opens/updates ONE open issue labeled `safety-alert`
+# (closed automatically on the next passing run).
+on:
+  schedule:
+    - cron: "41 * * * *"        # hourly; the outbound link scan runs only at 00/06/12/18 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "normal | full (include link scan) | update-baseline (accept current page text + checkout links) | simulate-failure (test alerting)"
+        type: choice
+        default: normal
+        options: [normal, full, update-baseline, simulate-failure]
+permissions:
+  contents: write   # only used by mode=update-baseline / first-run baseline commit
+  issues: write     # safety-alert issue
+concurrency:
+  group: safety-check
+  cancel-in-progress: false
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MODE: ${{ inputs.mode || 'normal' }}
+      GITLEAKS_VERSION: 8.30.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Private site source. Uses SITE_REPO_TOKEN if set, otherwise tries the default token (which normally
+      # cannot read another private repo). Failure here just skips the repo-based checks.
+      - name: Check out site source (private)
+        id: site
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: johngee518/agenttoolbox-site
+          token: ${{ secrets.SITE_REPO_TOKEN || github.token }}
+          path: site
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Run safety checks
+        id: check
+        env:
+          GOOGLE_SAFE_BROWSING_KEY: ${{ secrets.GOOGLE_SAFE_BROWSING_KEY }}
+          SITE_REPO_OK: ${{ steps.site.outcome == 'success' && secrets.SITE_REPO_TOKEN != '' }}
+          GH_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+          SITE_DIR: ${{ github.workspace }}/site
+        run: python3 scripts/safety_check.py
+
+      - name: Commit baseline (update-baseline or first run only)
+        if: always()
+        run: |
+          git add safety/baseline.json safety/pages
+          if git diff --cached --quiet; then echo "baseline unchanged"; exit 0; fi
+          git config user.name "agenttoolbox-safety-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Safety baseline update (${MODE}) $(date -u +%FT%TZ)"
+          git push
+
+      - name: Open, update or close the safety-alert issue
+        if: always() && hashFiles('out/status.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh label create safety-alert --color B60205 --description "Automated safety check failure" 2>/dev/null || true
+          FAILED=$(jq -r .failed out/status.json); SIG=$(jq -r .signature out/status.json)
+          NUM=$(gh issue list -l safety-alert --state open --json number --jq '.[0].number // empty')
+          if [ "$FAILED" = "true" ]; then
+            { echo "<!-- sig:$SIG -->"; echo "**Latest failing run:** $RUN_URL"; echo "**Updated:** $(date -u '+%F %H:%M UTC')"; echo;
+              echo "## Failures"; jq -r '.fails[] | "- " + .' out/status.json; echo;
+              echo "## Warnings"; jq -r '.warns[] | "- " + .' out/status.json; echo;
+              echo "_This issue is updated in place on every failing run and closed automatically when checks pass._"; } > body.md
+            if [ -z "$NUM" ]; then
+              gh issue create -l safety-alert -t "Safety check failing: agenttoolbox.net" -F body.md
+            else
+              OLD=$(gh issue view "$NUM" --json body --jq .body | grep -o 'sig:[0-9a-f]*' || true)
+              gh issue edit "$NUM" -F body.md
+              # comment only when the set of failures changes (no hourly spam)
+              if [ "$OLD" != "sig:$SIG" ]; then gh issue comment "$NUM" -b "Failure set changed: $RUN_URL"; fi
+            fi
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" -c "All safety checks passing again: $RUN_URL"
+          fi

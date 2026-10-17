@@ -1,0 +1,32 @@
+Terms of Service Last updated: October 15, 2026 Use of the service Agent Toolbox provides free tools, a directory and an API "as is".
+You may use them for personal and commercial purposes.
+Do not abuse the API, attempt to bypass rate limits, or use the service for unlawful purposes.
+No warranty Outputs such as token counts and cost estimates are approximations.
+Verify prices and results with the relevant providers.
+We are not liable for decisions made based on the tools.
+Third-party links The directory links to third-party sites we do not control.
+Featured listings are paid placements; affiliate links may earn us a commission.
+Neither is an endorsement.
+Community game submissions You may submit links to free mini games for our Community Games gallery.
+By submitting, you confirm the game is free to play, your original work (or you have the rights to share it), and free of malware, phishing, tracking, adult or unlawful content.
+Games are hosted by you on third-party sites; we only link to them and never host or run submitted code.
+We review submissions by hand and may decline, edit the listing text of, or remove any listing at any time at our sole discretion, without notice.
+Your contact email is used only to reach you about your submission (and for the newsletter only if you opt in).
+You grant us permission to display your title, description, handle and screenshot in the gallery.
+To request removal, email hello@agenttoolbox.net .
+Paid plans Pro API plans are billed via Stripe on a recurring basis until cancelled.
+Contact us to cancel.
+Fees are non-refundable except where required by law.
+Featured directory listings There are 25 Featured spots.
+Spots 1-12 are priced at the base rate for our current audience tier and spots 13-25 at the base rate plus 20%; current prices are shown on the sponsor page .
+When all spots are taken, new buyers join a waitlist (email agenttoolbox.net@gmail.com) and freed spots are offered in the order people joined.
+Each Featured spot runs for 30 days from the date your payment is approved.
+You can buy a single 30-day period, which simply ends, or choose auto-renew, which renews monthly at the price you locked in until you cancel.
+If you don't renew, any later purchase is at the then-current base rate.
+When a listing expires its spot is released to the waitlist.
+We may decline or remove listings that are unlawful, misleading or unrelated to AI agents.
+All Featured purchases are final and non-refundable , except where required by law.
+Limitation of liability To the maximum extent permitted by law, Agent Toolbox is not liable for indirect or consequential damages, and total liability is limited to amounts you paid us in the prior 12 months.
+Changes We may update these terms.
+Continued use means acceptance.
+Contact: hello@agenttoolbox.net .

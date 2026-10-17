@@ -1,0 +1,32 @@
+New Now available as an MCP server The free toolkit for agent builders.
+Free, instant and private utilities for LLM apps, tool calling and MCP.
+No signup, nothing leaves your browser, and your agents can use them too.
+Explore the tools Browse the directory mcp.json · Agent Toolbox // Add to Cursor or Claude Desktop { "mcpServers" : { "agenttoolbox" : { "url" : "…/api/mcp" } } } → tools/call estimate_tokens { "input_tokens" : # , "claude-opus-#-#" : # , "gpt-#-sol" : # } ✓ # tools available # Free tools # + Curated resources # Signups required The toolkit Everything you need.
+Nothing you don't.
+Know the cost before you ship.
+Paste any prompt and see token counts and per-call and monthly cost across the top-ranked models from Anthropic, OpenAI, Google, xAI and DeepSeek, side by side.
+Open Token & Cost Estimator Token & Cost Estimator Model Per call Per month Claude Opus # $# $# Gemini # Argon $# $# GPT-# Sol $# $# DeepSeek V# Flash $# $# One schema.
+Every format.
+Turn a JSON Schema into ready-to-paste tool definitions for OpenAI, Anthropic and the Model Context Protocol.
+Validated as you type.
+Open JSON Schema → Tool Definition JSON Schema → Tool Definition { "name": "get_weather", "description": "Get current weather", "input_schema": { "type": "object", "properties": { "city": { "type": "string" } }, "required": ["city"] } } Prompts, without the guesswork.
+Catch hedging, conflicting rules, leaked secrets, missing output formats and more, before your agent does something surprising.
+Open System Prompt Linter System Prompt Linter ⚠ Hedging language weakens instructions ✕ Possible API key found in prompt ⚠ No output format specified ✓ Role defined Wire up MCP in seconds.
+Generate mcpServers JSON for Claude Desktop, Cursor and others.
+Schedules you can read.
+Explain cron schedules for agent jobs and preview next runs.
+Parse model output reliably.
+Test regexes that extract structured data from LLM output.
+Built for agents Your agents can use every tool.
+A JSON API, an OpenAPI spec, llms.txt and a hosted MCP server.
+Point your agent at it and go.
+curl -X POST /api/tools/estimate_tokens \ -d '{"text":"You are a helpful agent…"}' Developer docs Private by design Web tools run #% client-side.
+Your prompts never touch our servers.
+Instant No logins, no loading spinners.
+Open a tool and you're working.
+A directory worth bookmarking Frameworks, MCP servers, sandboxes, observability and more, hand-picked and verified.
+Newsletter The daily agent toolkit.
+New tools, MCP servers and frameworks, in one short email every morning.
+Free, no spam.
+Sign up and get the free AI agent cost cheat sheet (PDF).
+Subscribe
