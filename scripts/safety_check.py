@@ -123,6 +123,22 @@ def check_headers():
             "Content-Security-Policy": bool(csp),
             "Clickjacking (CSP frame-ancestors or X-Frame-Options)": "frame-ancestors" in csp or "x-frame-options" in h,
         }
+        # Hosting expectations (Cloudflare Pages since 2026-10-17). pages.dev serves noindex; the real domain must never.
+        if CFG.get("forbid_noindex", False):
+            body = r.get("body") or r.get("text") or ""
+            xr = h.get("x-robots-tag", "").lower()
+            meta = re.search(r'<meta[^>]+name=["\']robots["\'][^>]+noindex', body, re.I) if isinstance(body, str) else None
+            if "noindex" in xr or meta:
+                rec(S, "FAIL", f"{p}: noindex on production ({'X-Robots-Tag' if 'noindex' in xr else 'meta robots'}) - search engines would drop the site")
+            else:
+                rec(S, "PASS", f"{p}: indexable (no noindex)")
+        exp = CFG.get("expect_server", "")
+        if exp:
+            srv = h.get("server", "")
+            if exp.lower() not in srv.lower() or "x-vercel-id" in h:
+                rec(S, "WARN", f"{p}: served by '{srv or '?'}'{' (x-vercel-id present)' if 'x-vercel-id' in h else ''}, expected {exp} - DNS rolled back or changed?")
+            else:
+                rec(S, "PASS", f"{p}: served by {srv}")
         missing = [k for k, ok in checks.items() if not ok]
         if not missing:
             rec(S, "PASS", f"{p}: all present"); continue
