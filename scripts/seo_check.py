@@ -312,6 +312,9 @@ def main():
     home = fetch(base + "/", a.timeout)
     if home["status"] != 200:
         print(f"ERROR: homepage {base}/ returned {home['status'] or home['error']}")
+        h = home.get("headers") or {}
+        print("  diagnostics:", {k: h.get(k) for k in ("server", "cf-mitigated", "cf-ray", "content-type")},
+              (home.get("body") or "")[:300].replace("\n", " "))
         return 2
     final = urllib.parse.urlparse(home["url"])
     host = final.netloc
