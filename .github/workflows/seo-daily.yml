@@ -20,9 +20,7 @@ jobs:
       SITE_URL: ${{ vars.SITE_URL || 'https://agenttoolbox.net' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      # System python3 (stdlib only), same as safety-check: the setup-python build got 403s from Cloudflare.
       - name: Run SEO check
         id: seo
         run: |
