@@ -20,3 +20,11 @@ Optional secrets (repo Settings > Secrets and variables > Actions):
 - `SITE_REPO_TOKEN`: fine-grained token, only repo johngee518/agenttoolbox-site, Contents: Read + Issues: Read.
 
 Host-agnostic: no Vercel-specific headers or paths are required, so a move to Cloudflare Pages needs no changes here.
+
+## SEO check (daily, `.github/workflows/seo-daily.yml`)
+Runs daily at 11:17 UTC (plus manual run) with `scripts/seo_check.py` (stdlib Python, GET/HEAD to the public site only, no secrets).
+Checks host variants and http->https, robots.txt, sitemap URL statuses, titles/descriptions, canonical, headings, noindex, OG/Twitter,
+JSON-LD, alt text, viewport, lang, favicon, hreflang, soft 404 and broken internal links. Any FAIL opens/updates one issue labeled
+`safety-alert` + `seo-alert` ("SEO check failing: agenttoolbox.net"), closed automatically when passing. The safety-check workflow
+ignores `seo-alert` issues so the two alerts never overwrite each other.
+- Run now: `gh workflow run seo-daily.yml -R johngee518/agenttoolbox-monitor`

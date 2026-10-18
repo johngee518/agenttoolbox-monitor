@@ -1,0 +1,75 @@
+# Daily technical SEO check for agenttoolbox.net (public site only; stdlib Python, no secrets).
+# Any FAIL opens/updates ONE open issue labeled `safety-alert` + `seo-alert` (closed automatically when passing).
+# The safety-check workflow ignores issues labeled seo-alert, so the two alerts never overwrite each other.
+name: seo-daily
+on:
+  schedule:
+    - cron: "17 11 * * *"   # daily 11:17 UTC
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  issues: write   # seo-alert issue only
+concurrency:
+  group: seo-daily
+  cancel-in-progress: false
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://agenttoolbox.net' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run SEO check
+        id: seo
+        run: |
+          set +e
+          python3 scripts/seo_check.py "$SITE_URL" --max-pages 25 --max-links 150 --json seo-report.json > seo-report.txt 2>&1
+          rc=$?
+          cat seo-report.txt
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+      - name: Job summary
+        if: always()
+        run: |
+          { echo '```'; cat seo-report.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seo-report
+          path: |
+            seo-report.txt
+            seo-report.json
+          retention-days: 14
+      - name: Open, update or close the seo-alert issue
+        if: always() && steps.seo.outputs.rc != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RC: ${{ steps.seo.outputs.rc }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh label create safety-alert --color B60205 --description "Automated safety check failure" 2>/dev/null || true
+          gh label create seo-alert --color D93F0B --description "Automated SEO check failure" 2>/dev/null || true
+          NUM=$(gh issue list -l seo-alert --state open --json number --jq '.[0].number // empty')
+          if [ "$RC" != "0" ]; then
+            SIG=$(grep '^  \[FAIL\]' seo-report.txt | sha1sum | cut -c1-12 || true)
+            { echo "<!-- sig:$SIG -->"; echo "**Latest failing run:** $RUN_URL"; echo "**Site:** $SITE_URL"; echo "**Updated:** $(date -u '+%F %H:%M UTC')"; echo;
+              echo "## Failures"; grep '^  \[FAIL\]' seo-report.txt | sed 's/^  \[FAIL\] /- /' || echo "- exit code $RC (homepage unreachable or script error)"; echo;
+              echo "## Warnings"; grep '^  \[WARN\]' seo-report.txt | sed 's/^  \[WARN\] /- /' | head -40 || true; echo;
+              echo "_Updated in place on every failing run and closed automatically when the SEO check passes._"; } > body.md
+            if [ -z "$NUM" ]; then
+              gh issue create -l safety-alert -l seo-alert -t "SEO check failing: agenttoolbox.net" -F body.md
+            else
+              OLD=$(gh issue view "$NUM" --json body --jq .body | grep -o 'sig:[0-9a-f]*' || true)
+              gh issue edit "$NUM" -F body.md
+              if [ "$OLD" != "sig:$SIG" ]; then gh issue comment "$NUM" -b "Failure set changed: $RUN_URL"; fi
+            fi
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" -c "SEO check passing again: $RUN_URL"
+          fi
+      - name: Fail the job on SEO failures
+        if: steps.seo.outputs.rc != '0'
+        run: exit 1

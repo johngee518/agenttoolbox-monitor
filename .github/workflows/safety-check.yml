@@ -78,7 +78,7 @@ jobs:
           set -euo pipefail
           gh label create safety-alert --color B60205 --description "Automated safety check failure" 2>/dev/null || true
           FAILED=$(jq -r .failed out/status.json); SIG=$(jq -r .signature out/status.json)
-          NUM=$(gh issue list -l safety-alert --state open --json number --jq '.[0].number // empty')
+          NUM=$(gh issue list -l safety-alert --state open --json number,labels --jq '[.[] | select(all(.labels[]; .name != "seo-alert"))][0].number // empty')  # seo-alert issues belong to seo-daily
           if [ "$FAILED" = "true" ]; then
             { echo "<!-- sig:$SIG -->"; echo "**Latest failing run:** $RUN_URL"; echo "**Updated:** $(date -u '+%F %H:%M UTC')"; echo;
               echo "## Failures"; jq -r '.fails[] | "- " + .' out/status.json; echo;
