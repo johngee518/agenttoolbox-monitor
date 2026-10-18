@@ -18,7 +18,8 @@ import urllib.request, urllib.error, urllib.parse
 from html.parser import HTMLParser
 import xml.etree.ElementTree as ET
 
-UA = "Mozilla/5.0 (compatible; SEOCheckBot/1.0; +https://github.com/johngee518)"
+# Browser-style UA (same pattern as safety_check.py): Cloudflare answers 403 to bot-style UAs from Actions runners.
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AgentToolbox-SEOCheck/1.0"
 CTX = ssl.create_default_context()
 
 
@@ -33,7 +34,7 @@ def fetch(url, timeout=15, follow=True, method="GET"):
     cur = url
     opener = urllib.request.build_opener(NoRedirect, urllib.request.HTTPSHandler(context=CTX))
     for _ in range(10):
-        req = urllib.request.Request(cur, method=method, headers={"User-Agent": UA, "Accept-Encoding": "gzip"})
+        req = urllib.request.Request(cur, method=method, headers={"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Encoding": "gzip"})
         try:
             r = opener.open(req, timeout=timeout)
             status, headers, body = r.status, r.headers, r.read()
