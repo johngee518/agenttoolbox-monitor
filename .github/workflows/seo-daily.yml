@@ -15,7 +15,7 @@ concurrency:
 jobs:
   seo:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30   # sequential requests with a 1.5 s pause (~320 requests)
     env:
       SITE_URL: ${{ vars.SITE_URL || 'https://agenttoolbox.net' }}
     steps:
@@ -53,9 +53,9 @@ jobs:
           gh label create seo-alert --color D93F0B --description "Automated SEO check failure" 2>/dev/null || true
           NUM=$(gh issue list -l seo-alert --state open --json number --jq '.[0].number // empty')
           if [ "$RC" != "0" ]; then
-            SIG=$(grep '^  \[FAIL\]' seo-report.txt | sha1sum | cut -c1-12 || true)
+            SIG=$(grep -E '^(  \[FAIL\]|CHALLENGED|ERROR)' seo-report.txt | sed 's/cf-ray=[^ ]*//' | sha1sum | cut -c1-12 || true)
             { echo "<!-- sig:$SIG -->"; echo "**Latest failing run:** $RUN_URL"; echo "**Site:** $SITE_URL"; echo "**Updated:** $(date -u '+%F %H:%M UTC')"; echo;
-              echo "## Failures"; grep '^  \[FAIL\]' seo-report.txt | sed 's/^  \[FAIL\] /- /' || echo "- exit code $RC (homepage unreachable or script error)"; echo;
+              echo "## Failures"; { grep -E '^(CHALLENGED|ERROR):' seo-report.txt; grep '^  \[FAIL\]' seo-report.txt | sed 's/^  \[FAIL\] /- /'; } || echo "- exit code $RC (script error)"; echo;
               echo "## Warnings"; grep '^  \[WARN\]' seo-report.txt | sed 's/^  \[WARN\] /- /' | head -40 || true; echo;
               echo "_Updated in place on every failing run and closed automatically when the SEO check passes._"; } > body.md
             if [ -z "$NUM" ]; then
