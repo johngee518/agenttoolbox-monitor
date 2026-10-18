@@ -19,7 +19,7 @@ from html.parser import HTMLParser
 import xml.etree.ElementTree as ET
 
 # Browser-style UA (same pattern as safety_check.py): Cloudflare answers 403 to bot-style UAs from Actions runners.
-UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AgentToolbox-SEOCheck/1.0"
+UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36 AgentToolbox-SafetyCheck/1.0 (seo)"
 CTX = ssl.create_default_context()
 
 
