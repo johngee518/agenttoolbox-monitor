@@ -34,7 +34,7 @@ def fetch(url, timeout=15, follow=True, method="GET"):
     cur = url
     opener = urllib.request.build_opener(NoRedirect, urllib.request.HTTPSHandler(context=CTX))
     for _ in range(10):
-        req = urllib.request.Request(cur, method=method, headers={"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Encoding": "gzip"})
+        req = urllib.request.Request(cur, method=method, headers={"User-Agent": UA, "Accept": "text/html,application/json;q=0.9,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.8"})
         try:
             r = opener.open(req, timeout=timeout)
             status, headers, body = r.status, r.headers, r.read()
