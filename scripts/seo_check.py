@@ -145,6 +145,71 @@ def ld_types(obj, out):
     return out
 
 
+# ---- AI-answer (AEO) checks: required JSON-LD fields, llms.txt, AI crawler access in robots.txt
+AI_BOTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "PerplexityBot",
+           "Google-Extended", "Applebot-Extended", "CCBot"]
+LD_REQUIRED = {"FAQPage": ["mainEntity"], "Question": ["name", "acceptedAnswer"], "Answer": ["text"],
+               "Article": ["headline", "datePublished", "author", "publisher"],
+               "BlogPosting": ["headline", "datePublished", "author", "publisher"],
+               "NewsArticle": ["headline", "datePublished", "author", "publisher"],
+               "Product": ["name", "offers"], "Offer": ["price", "priceCurrency"],
+               "Organization": ["name", "url"], "WebSite": ["name", "url"]}
+
+
+def ld_problems(obj, out, where="$"):
+    """Missing/empty required fields for the schema.org types we publish (nested objects included)."""
+    if isinstance(obj, list):
+        for i, o in enumerate(obj):
+            ld_problems(o, out, f"{where}[{i}]")
+        return out
+    if not isinstance(obj, dict):
+        return out
+    t = obj.get("@type")
+    for ty in (t if isinstance(t, list) else [t]):
+        for f in LD_REQUIRED.get(ty, []):
+            v = obj.get(f)
+            if v in (None, "", [], {}):
+                out.append(f"{ty} missing {f}")
+        if ty in ("Article", "BlogPosting", "NewsArticle"):
+            for f in ("datePublished", "dateModified"):
+                v = obj.get(f)
+                if v and not re.match(r"^\d{4}-\d{2}-\d{2}", str(v)):
+                    out.append(f"{ty} {f} is not an ISO date: {v!r}")
+    for k, v in obj.items():
+        if isinstance(v, (dict, list)) and k != "@context":
+            ld_problems(v, out, where + "." + k)
+    return out
+
+
+def robots_groups(body):
+    """[(set(user-agents lower), [(directive, value)])] per robots.txt group."""
+    groups, cur, last_ua = [], None, False
+    for line in body.splitlines():
+        line = line.split("#")[0].strip()
+        if ":" not in line:
+            continue
+        k, v = (x.strip() for x in line.split(":", 1))
+        k = k.lower()
+        if k == "user-agent":
+            if not last_ua:
+                cur = (set(), []); groups.append(cur)
+            cur[0].add(v.lower()); last_ua = True
+        else:
+            last_ua = False
+            if cur is not None and k in ("allow", "disallow"):
+                cur[1].append((k, v))
+    return groups
+
+
+def ai_bot_blocked(groups, bot):
+    """True if the group that applies to `bot` (its own, else '*') disallows '/' without allowing it back."""
+    g = [x for x in groups if bot.lower() in x[0]] or [x for x in groups if "*" in x[0]]
+    rules = [r for x in g for r in x[1]]
+    dis = any(k == "disallow" and v == "/" for k, v in rules)
+    allow = any(k == "allow" and v == "/" for k, v in rules)
+    return dis and not allow
+
+
 def parse_sitemap(url, timeout, seen=None, depth=0):
     seen = seen if seen is not None else set()
     urls, problems = [], []
@@ -254,9 +319,13 @@ def check_page(url, base_host, rep, timeout, all_titles, all_descs, link_targets
     types = []
     for blob in p.jsonld:
         try:
-            ld_types(json.loads(blob), types)
+            obj = json.loads(blob)
         except Exception as e:
             rep.fail(path, f"invalid JSON-LD: {e}")
+            continue
+        ld_types(obj, types)
+        for prob in sorted(set(ld_problems(obj, []))):
+            rep.fail(path, f"JSON-LD {prob}")
     info["jsonld"] = types
     if not p.jsonld:
         rep.warn(path, "no JSON-LD structured data")
@@ -383,6 +452,23 @@ def run(a):
             rep.ok("robots.txt", "disallows: " + ", ".join(blocks))
         if not sitemaps:
             rep.warn("robots.txt", "no Sitemap: line")
+        groups = robots_groups(body)
+        blocked = [b for b in AI_BOTS if ai_bot_blocked(groups, b)]
+        if blocked:
+            rep.fail("robots.txt", "blocks AI answer crawlers: " + ", ".join(blocked))
+        else:
+            rep.ok("robots.txt", "AI answer crawlers allowed (" + ", ".join(AI_BOTS) + ")")
+    # llms.txt (AI-readable site summary)
+    lt = fetch(f"https://{host}/llms.txt", a.timeout)
+    ctype = str((lt.get("headers") or {}).get("Content-Type", "")).lower()
+    if lt["status"] != 200:
+        rep.fail("llms.txt", f"returned {lt['status'] or lt['error']}")
+    elif not ctype.startswith(("text/plain", "text/markdown")):
+        rep.fail("llms.txt", f"content-type is {ctype or 'missing'} (want text/plain or text/markdown)")
+    elif not (lt.get("body") or "").lstrip().startswith("# "):
+        rep.fail("llms.txt", "does not start with a '# ' title line")
+    else:
+        rep.ok("llms.txt", f"present ({len(lt['body'])} chars)")
     if not sitemaps:
         sitemaps = [f"https://{host}/sitemap.xml"]
     urls, probs = [], []

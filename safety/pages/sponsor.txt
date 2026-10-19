@@ -1,7 +1,10 @@
 Sponsor Reach the people building agents.
 Agent Toolbox serves developers working on AI agents, tool calling and MCP.
 Sponsors get the top bar, the newsletter and a featured card, with prices starting at $ 50 /month.
-N of N spots left Every plan includes Top sponsor bar across the whole site A slot in the daily newsletter A featured card on the site Best value Founder's Plan starting at $ 50 /mo Spots 1–25 at $50/mo · N left.
+N of N spots left What it is Paid placements on Agent Toolbox: sponsor plans (top bar, newsletter slot and featured card) and separate 30-day Featured directory listings.
+Who it's for Companies with products for developers building AI agents, tool calling and MCP.
+How it compares Prices are published on this page and follow the newsletter audience size, with a limited number of spots.
+Every plan includes Top sponsor bar across the whole site A slot in the daily newsletter A featured card on the site Best value Founder's Plan starting at $ 50 /mo Spots 1–25 at $50/mo · N left.
 Then $60 for spots 26–50, then $65.
 Early prices never reopen.
 12-month term, prepay $600/yr or pay monthly Price locked while it auto-renews Cancel monthly early: you lose the Founder's price, nothing more owed Prepaid year: no refund, runs to term Pay $50/mo Prepay $600/yr Questions first? Email us Monthly Plan starting at $ 75 /mo For lists of 0–500 subscribers.
@@ -42,4 +45,10 @@ Featured terms .
 Featured pricing by audience size There are 25 spots.
 Spots 1- 12 pay the tier base, spots 13 - 25 pay +20%.
 Prices follow our newsletter audience tier; we're currently in the 0–500 tier.
-Audience Spots 1- 12 Spots 13 - 25 (+20%) 0–500 $9.99 $11.99 500–1,000 $19.99 $23.99 1,000–2,500 $39.99 $47.99 2,500–5,000 $69.99 $83.99 5,000–10,000+ $119.99 $143.99 Questions? Email [email protected]
+Audience Spots 1- 12 Spots 13 - 25 (+20%) 0–500 $9.99 $11.99 500–1,000 $19.99 $23.99 1,000–2,500 $39.99 $47.99 2,500–5,000 $69.99 $83.99 5,000–10,000+ $119.99 $143.99 Questions? Email [email protected] Frequently asked questions How much does it cost to sponsor Agent Toolbox? Current plan prices are listed on this page.
+They depend on the newsletter audience tier and on how many Founder's spots are left.
+What is the difference between a sponsor plan and a Featured listing? A sponsor plan covers the top sponsor bar, a newsletter slot and a featured card.
+A Featured listing is a separate product that pins one tool to the top of the directory for 30 days.
+How do I request a spot? Buy directly with the checkout buttons when a plan is open, or email [email protected] .
+See the sponsor terms .
+Last updated : 2026-10-17

@@ -1,7 +1,10 @@
 New Now available as an MCP server The free toolkit for agent builders.
 Free, instant and private utilities for LLM apps, tool calling and MCP.
 No signup, nothing leaves your browser, and your agents can use them too.
-Explore the tools Browse the directory mcp.json · Agent Toolbox // Add to Cursor or Claude Desktop { "mcpServers" : { "agenttoolbox" : { "url" : "…/api/mcp" } } } → tools/call estimate_tokens { "input_tokens" : # , "claude-opus-#-#" : # , "gpt-#-sol" : # } ✓ # tools available # Free tools # + Curated resources # Signups required The toolkit Everything you need.
+Explore the tools Browse the directory mcp.json · Agent Toolbox // Add to Cursor or Claude Desktop { "mcpServers" : { "agenttoolbox" : { "url" : "…/api/mcp" } } } → tools/call estimate_tokens { "input_tokens" : # , "claude-opus-#-#" : # , "gpt-#-sol" : # } ✓ # tools available # Free tools # + Curated resources # Signups required What it is Free browser tools and a hand-curated directory for building AI agents, also available to agents over a REST API and an MCP server.
+Who it's for Developers working with LLM APIs, tool calling and MCP.
+How it compares No signup, and the web tools run in your browser, so what you paste stays on your device.
+The toolkit Everything you need.
 Nothing you don't.
 Know the cost before you ship.
 Paste any prompt and see token counts and per-call and monthly cost across the top-ranked models from Anthropic, OpenAI, Google, xAI and DeepSeek, side by side.
@@ -25,7 +28,17 @@ Your prompts never touch our servers.
 Instant No logins, no loading spinners.
 Open a tool and you're working.
 A directory worth bookmarking Frameworks, MCP servers, sandboxes, observability and more, hand-picked and verified.
-Newsletter The daily agent toolkit.
+Frequently asked questions What is Agent Toolbox? Agent Toolbox is a small, independent site with free tools for AI agent builders, such as a token cost estimator, a tool-schema converter and a prompt linter, plus a curated directory of agent frameworks and infrastructure.
+Is Agent Toolbox free? Yes.
+Every web tool is free, with no account.
+A paid Pro plan only applies to heavier use of the API and MCP server.
+Can AI agents use Agent Toolbox? Yes.
+The tools are available as a JSON API, an OpenAPI spec, llms.txt and a hosted MCP server.
+See the developer docs .
+Does Agent Toolbox store my prompts? No.
+The web tools run in your browser, so text you paste is processed on your device.
+See the privacy policy .
+Last updated : #-#-# Newsletter The daily agent toolkit.
 New tools, MCP servers and frameworks, in one short email every morning.
 Free, no spam.
 Sign up and get the free AI agent cost cheat sheet (PDF).

@@ -2,8 +2,21 @@ Pricing Free to start.
 Pro when you scale.
 Every web tool is free forever.
 Plans apply to the API and MCP server.
+What it is Plans for the Agent Toolbox API and MCP server.
+Every web tool on the site stays free.
+Who it's for Free suits side projects and evaluation.
+Pro is for agents in production that need more than 60 requests per hour.
+How it compares API keys are delivered instantly after checkout, and you can cancel anytime.
 Monthly Annual · 2 months free Free For side projects and evaluation.
 $0 60 API / MCP requests per hour All tools + directory search No API key required Community support Read the docs Most popular Pro For agents in production.
 $19 /month Unlimited fair-use API access via x-api-key API key delivered instantly Priority access to new tools Email support · Cancel anytime Upgrade to Pro Have a promo code? Enter it at checkout.
 Cancel anytime.
 See our refund policy .
+Frequently asked questions How much does Agent Toolbox Pro cost? Pro costs $19 per month or $190 per year (two months free).
+Payment is handled by Stripe, and promo codes can be entered at checkout.
+What do I get on the free plan? The free plan includes 60 API and MCP requests per hour per IP, all tools and directory search, with no API key required.
+How do I use my Pro API key? Send it in the x-api-key header on API and MCP requests.
+The key is shown instantly after checkout.
+Can I cancel or get a refund? You can cancel anytime.
+Refunds follow the refund policy .
+Last updated : 2026-10-19
