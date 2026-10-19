@@ -522,6 +522,9 @@ def run(a):
     broken = []
     for t in sorted(targets - checked)[: a.max_links]:
         r = fetch(t, a.timeout)
+        # POST-only API endpoints (e.g. /api/mcp) answer GET with 405: the URL exists, so it is not a broken link.
+        if r["status"] == 405 and urllib.parse.urlparse(t).path.startswith("/api/"):
+            continue
         if r["status"] is None or r["status"] >= 400:
             broken.append((t, r["status"] or r["error"]))
     for t, s in broken:
