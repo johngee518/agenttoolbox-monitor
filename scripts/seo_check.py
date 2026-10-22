@@ -367,7 +367,8 @@ def check_page(url, base_host, rep, timeout, all_titles, all_descs, link_targets
         if href.startswith(("mailto:", "tel:", "javascript:", "#", "data:")) or "/cdn-cgi/" in href:
             continue
         absu = urllib.parse.urljoin(url, href).split("#")[0]
-        if urllib.parse.urlparse(absu).netloc == base_host:
+        # /go/<partner> are counted affiliate redirects (robots-disallowed, noindex): checking them would log fake clicks.
+        if urllib.parse.urlparse(absu).netloc == base_host and not urllib.parse.urlparse(absu).path.startswith("/go/"):
             link_targets.add(absu)
     return info
 
