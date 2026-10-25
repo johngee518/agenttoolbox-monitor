@@ -270,7 +270,8 @@ def outbound_urls():
     try:
         for t in json.loads(r["body"]):
             for k in ("url", "affiliateUrl"):
-                if t.get(k): urls[t[k]] = f"directory: {t.get('name','?')}"
+                # relative links (e.g. /go/<partner> affiliate redirects) resolve against the site host
+                if t.get(k): urls[urllib.parse.urljoin(BASE + "/", t[k])] = f"directory: {t.get('name','?')}"
     except Exception:
         rec("5. Outbound links", "FAIL", f"/api/directory not parseable (status {r['status']})")
     for p in CFG["outbound_link_pages"]:
@@ -301,11 +302,13 @@ def probe(url):
         return "WARN", f"HTTP {st} (likely bot protection; check by hand if it persists)"
     if st >= 400: return "FAIL", f"HTTP {st} after retry"
     final = urllib.parse.urlparse(r["final_url"]).hostname or ""
+    # own-host /go/ redirects are expected to land on the partner's domain; parked/marketplace checks still apply
+    own = regdom(hn) == regdom(HOST)
     if regdom(final) != regdom(hn):
         allowed = CFG["allowed_redirects"].get(regdom(hn), [])
         if regdom(final) in PARK_HOSTS or any(regdom(final).endswith(x) for x in PARK_HOSTS):
             return "FAIL", f"redirects to domain marketplace {final}"
-        if regdom(final) not in allowed:
+        if regdom(final) not in allowed and not own:
             return "FAIL", f"redirects to a different domain: {hn} -> {final} (if legit, add to allowed_redirects in safety/config.json)"
     m = PARKED.search(r["body"][:300_000])
     if m: return "FAIL", f"page looks parked / for sale (matched '{m.group(0)[:60]}')"
