@@ -1,7 +1,7 @@
 {
   "pages": {
     "/": "23006ff05c630d8f0bb5e9a1138747a60880ea0333941ffd5a471241ac414070",
-    "/sponsor": "459814ce68f7154dd884c68c487820727eefd031f949e3f3c5b1e34ef4395de6",
+    "/sponsor": "4e10873b41ad58a2ba68b9cb4f4f87d934d2c3f0a1724fcaa80596b2ecd1293c",
     "/pricing": "c0dbe3568b9f1afd0339a5ce8767d47b6ae7803a8f0dabc3b313db9614050a5d",
     "/terms": "d94d0ecf1e007f6fd34ec84a8495d7d7f1c59c487a660bf69e87e6f71e669398"
   },
@@ -17,5 +17,5 @@
     "https://buy.stripe.com/dRm7sLfVAcCVfnc8Ka7kc05",
     "https://buy.stripe.com/eVqdR9cJobyRa2SbWm7kc04"
   ],
-  "updated": "2026-10-24T13:16:35.527414+00:00"
+  "updated": "2026-10-26T13:29:02.394253+00:00"
 }
