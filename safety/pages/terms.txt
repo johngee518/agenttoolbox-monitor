@@ -1,4 +1,4 @@
-Terms of Service Last updated: October 15, 2026 Use of the service Agent Toolbox provides free tools, a directory and an API "as is".
+Terms of Service Last updated: October 26, 2026 Use of the service Agent Toolbox provides free tools, a directory and an API "as is".
 You may use them for personal and commercial purposes.
 Do not abuse the API, attempt to bypass rate limits, or use the service for unlawful purposes.
 No warranty Outputs such as token counts and cost estimates are approximations.
@@ -29,7 +29,10 @@ If you don't renew, any later purchase is at the then-current base rate.
 When a listing expires its spot is released to the waitlist.
 We may decline or remove listings that are unlawful, misleading or unrelated to AI agents.
 All Featured purchases are final and non-refundable , except where required by law.
-Limitation of liability To the maximum extent permitted by law, Agent Toolbox is not liable for indirect or consequential damages, and total liability is limited to amounts you paid us in the prior 12 months.
+Limitation of liability To the maximum extent permitted by law, Agent Toolbox is not liable for indirect or consequential damages, and our total liability is limited to the greater of US$100 or the amounts you paid us in the prior 12 months.
+Governing law These terms are governed by the laws of the State of Oklahoma, USA, without regard to its conflict-of-laws rules, except where the law of your place of residence requires otherwise.
+Contact Agent Toolbox, 600 1st Ave, Ste 330 PMB 92768, Seattle, WA 98104-2246, USA.
+Email: [email protected] .
 Changes We may update these terms.
 Continued use means acceptance.
 Contact: [email protected] .
