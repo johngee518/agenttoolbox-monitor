@@ -1,21 +1,15 @@
 {
   "pages": {
-    "/": "61700ece2f7be8576f492f048bd10dbf0631afde0c1de1196761d66fa97d4079",
-    "/sponsor": "4e10873b41ad58a2ba68b9cb4f4f87d934d2c3f0a1724fcaa80596b2ecd1293c",
-    "/pricing": "c0dbe3568b9f1afd0339a5ce8767d47b6ae7803a8f0dabc3b313db9614050a5d",
-    "/terms": "78df57baebf5f64ec6e894e4df1e8591609bc4ced879d598cfd4eca3e695c1d1"
+    "/": "4c76970bf199166f61c29923ff2c81237554685b92d4da72981907c696b63aa0",
+    "/sponsor": "8f8e9f7d009349a2c8a234db6b547962d07aff2d9123fdb3c180a1a239f7d2f5",
+    "/pricing": "8f8e9f7d009349a2c8a234db6b547962d07aff2d9123fdb3c180a1a239f7d2f5",
+    "/terms": "9b4bbfc2c792c0b7269aaff74daf9ad15441a2809942ac2be878b9429bdff7c9"
   },
   "checkout_allowlist": [
     "https://buy.stripe.com/5kQdR938O1Yhcb0f8y7kc02",
-    "https://buy.stripe.com/9B600j9xc46p2Aqe4u7kc07",
-    "https://buy.stripe.com/9B64gz38O1Yhgrg9Oe7kc06",
     "https://buy.stripe.com/9B67sL9xcdGZ0si2lM7kc09",
-    "https://buy.stripe.com/aFabJ14cS7iB0si4tU7kc03",
     "https://buy.stripe.com/cNieVdaBg9qJ3Eu1hI7kc0a",
-    "https://buy.stripe.com/cNifZhaBg32l3EugcC7kc08",
-    "https://buy.stripe.com/dRm28raBgbyRgrg0dE7kc01",
-    "https://buy.stripe.com/dRm7sLfVAcCVfnc8Ka7kc05",
-    "https://buy.stripe.com/eVqdR9cJobyRa2SbWm7kc04"
+    "https://buy.stripe.com/dRm28raBgbyRgrg0dE7kc01"
   ],
-  "updated": "2026-10-27T13:27:13.219657+00:00"
+  "updated": "2026-10-28T02:51:34.687062+00:00"
 }

@@ -1,54 +1,22 @@
-Sponsor Reach the people building agents.
-Agent Toolbox serves developers working on AI agents, tool calling and MCP.
-Sponsors get the top bar, the newsletter and a featured card, with prices starting at $ 50 /month.
-What it is Paid placements on Agent Toolbox: sponsor plans (top bar, newsletter slot and featured card) and separate 30-day Featured directory listings.
-Who it's for Companies with products for developers building AI agents, tool calling and MCP.
-How it compares Prices are published on this page and follow the newsletter audience size, with a limited number of spots.
-Every plan includes Top sponsor bar across the whole site A slot in the daily newsletter A featured card on the site Best value Founder's Plan starting at $ 50 /mo Spots 1–25 at $50/mo.
-Then $60 for spots 26–50, then $65.
-Early prices never reopen.
-12-month term, prepay $600/yr or pay monthly Price locked while it auto-renews Cancel monthly early: you lose the Founder's price, nothing more owed Prepaid year: no refund, runs to term Pay $50/mo Prepay $600/yr Questions first? Email us Monthly Plan starting at $ 75 /mo For lists of 0–500 subscribers.
-2-month minimum, then month-to-month.
-2-month minimum Then cancel anytime, month to month Price locked while it auto-renews Start for $75/mo Questions first? Email us One-Month Promotion starting at $ 95 once A single month.
-Monthly price plus 25%.
-One month of placements No commitment No price lock Buy for $95 Questions first? Email us The total is capped at 75 sponsor spots across all plans, with one shared waitlist.
-Prices grow with the newsletter.
-The price you lock in stays the same while your plan auto-renews.
-Founder's prices always stay below Monthly.
-Sponsorships run by calendar month.
-If a slot is open, your sponsorship starts on the 1st of the next month.
-If no slot is open, you join the waitlist, and when you're next up, you start on the 1st of the month after a slot opens.
-Every sponsorship runs the entire calendar month.
-All sales are final, and we don't guarantee results.
-See the sponsor terms .
-All prices scale with our subscriber count Every sponsor price comes from this table.
-The highlighted row is the level that applies today.
-Subscribers Founder's #1–25 Founder's #26–50 Founder's after 50 Monthly Plan One-month (one-time) 0–500 (now) $ 50 $ 60 $ 65 $ 75 $ 95 500–1,000 $ 99 $ 120 $ 130 $ 150 $ 190 1,000–2,500 $ 199 $ 240 $ 260 $ 300 $ 375 2,500–5,000 $ 349 $ 420 $ 455 $ 525 $ 655 5,000–10,000+ $ 599 $ 720 $ 780 $ 900 $ 1,125 Founder's Plan and Monthly Plan prices are per month.
-The Monthly Plan has a 2-month minimum term.
-Founder's prices at today's level: #1–25 $ 50 /mo or $ 600 prepaid; #26–50 $ 60 /mo or $ 720 prepaid; after 50 $ 65 /mo or $ 780 prepaid (12-month term).
-Only 25 at $ 50 and 25 at $ 60 , ever.
-Waitlist: $ 65 /mo, Founder's top tier.
-Price estimator What would a spot cost at a given list size? 0–500 subscribers Founder's $ 50 /mo Monthly $ 75 /mo One-Month $ 95 once Starting prices for new sponsors at that size.
-Founder's and Monthly prices you lock in don't change while your plan auto-renews.
-Creative Email it to [email protected] : a headline (60 characters max), up to 75 words, one link, an optional image or GIF, and an optional video or audio link.
-Send it any time before your start date.
-Free pre-check Send us your creative before you buy and we'll confirm it fits our guidelines, for free.
-Make-goods If we miss a placement, we rerun it free.
-No results are guaranteed, and all sales are final.
-Just want a directory spot? Featured listing Pinned to the top of the directory.
-$9.99 /30 days Gradient card with Featured badge Pinned above all directory results Included in API and MCP search results Mention in the daily newsletter $9.99 for 30 days Auto-renew $9.99/mo Each spot runs 30 days from approved payment.
-No refunds.
-Auto-renew keeps your locked price until you cancel; if you don't renew, you'll pay the then-current base rate when you come back.
-When a listing expires, its spot goes to the waitlist.
-A separate product from the 75 sponsor spots.
-Featured terms .
-Featured pricing by audience size There are 25 spots.
-Spots 1- 12 pay the tier base, spots 13 - 25 pay +20%.
-Prices follow our newsletter audience tier; we're currently in the 0–500 tier.
-Audience Spots 1- 12 Spots 13 - 25 (+20%) 0–500 $9.99 $11.99 500–1,000 $19.99 $23.99 1,000–2,500 $39.99 $47.99 2,500–5,000 $69.99 $83.99 5,000–10,000+ $119.99 $143.99 Questions? Email [email protected] Frequently asked questions How much does it cost to sponsor Agent Toolbox? Current plan prices are listed on this page.
-They depend on the newsletter audience tier and the Founder's price tier.
-What is the difference between a sponsor plan and a Featured listing? A sponsor plan covers the top sponsor bar, a newsletter slot and a featured card.
-A Featured listing is a separate product that pins one tool to the top of the directory for 30 days.
-How do I request a spot? Buy directly with the checkout buttons when a plan is open, or email [email protected] .
-See the sponsor terms .
-Last updated : 2026-10-17
+Pricing Free to start.
+Pro when you scale.
+Every web tool is free forever.
+Plans apply to the API and MCP server.
+What it is Plans for the Agent Toolbox API and MCP server.
+Every web tool on the site stays free.
+Who it's for Free suits side projects and evaluation.
+Pro is for agents in production that need more than 60 requests per hour.
+How it compares API keys are delivered instantly after checkout, and you can cancel anytime.
+Monthly Annual · 2 months free Free For side projects and evaluation.
+$0 60 API / MCP requests per hour All tools + directory search No API key required Community support Read the docs Most popular Pro For agents in production.
+$19 /month Unlimited fair-use API access via x-api-key API key delivered instantly Priority access to new tools Email support · Cancel anytime Upgrade to Pro Have a promo code? Enter it at checkout.
+Cancel anytime.
+See our refund policy .
+Frequently asked questions How much does Agent Toolbox Pro cost? Pro costs $19 per month or $190 per year (two months free).
+Payment is handled by Stripe, and promo codes can be entered at checkout.
+What do I get on the free plan? The free plan includes 60 API and MCP requests per hour per IP, all tools and directory search, with no API key required.
+How do I use my Pro API key? Send it in the x-api-key header on API and MCP requests.
+The key is shown instantly after checkout.
+Can I cancel or get a refund? You can cancel anytime.
+Refunds follow the refund policy .
+Last updated : 2026-10-27

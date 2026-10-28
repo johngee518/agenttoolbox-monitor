@@ -2,7 +2,7 @@ New Now available as an MCP server The free toolkit for agent builders.
 Free, instant and private utilities for LLM apps, tool calling and MCP.
 No signup, nothing leaves your browser, and your agents can use them too.
 Explore the tools Browse the directory Works with Claude Desktop, Cursor and any other MCP client.
-# Free tools # + Curated resources # Signups required Connect your AI agent in one paste mcp.json · Agent Toolbox // Add to Cursor or Claude Desktop { "mcpServers" : { "agenttoolbox" : { "url" : "…/api/mcp" } } } → tools/call estimate_tokens { "input_tokens" : # , "claude-opus-#-#" : # , "gpt-#-sol" : # } ✓ # tools available Know the cost before you ship.
+MCP config Token estimator Schema to tool Prompt linter Connect your AI agent in one paste mcp.json · Agent Toolbox // Add to Cursor or Claude Desktop { "mcpServers" : { "agenttoolbox" : { "url" : "…/api/mcp" } } } → tools/call estimate_tokens { "input_tokens" : # , "claude-opus-#-#" : # , "gpt-#-sol" : # } ✓ # tools available Know the cost before you ship.
 Paste any prompt and see token counts and per-call and monthly cost across the top-ranked models from Anthropic, OpenAI, Google, xAI and DeepSeek, side by side.
 Open Token & Cost Estimator Token & Cost Estimator Model Per call Per month Claude Opus # $# $# Gemini # Argon $# $# GPT-# Sol $# $# DeepSeek V# Flash $# $# One schema.
 Every format.

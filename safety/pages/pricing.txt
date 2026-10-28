@@ -19,4 +19,4 @@ How do I use my Pro API key? Send it in the x-api-key header on API and MCP requ
 The key is shown instantly after checkout.
 Can I cancel or get a refund? You can cancel anytime.
 Refunds follow the refund policy .
-Last updated : 2026-10-19
+Last updated : 2026-10-27

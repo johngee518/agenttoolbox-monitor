@@ -21,7 +21,7 @@ Paid plans Pro API plans are billed via Stripe on a recurring basis until cancel
 Contact us to cancel.
 Fees are non-refundable except where required by law.
 Featured directory listings There are 25 Featured spots.
-Spots 1-12 are priced at the base rate for our current audience tier and spots 13-25 at the base rate plus 20%; current prices are shown on the sponsor page .
+Spots 1-12 are priced at the base rate for our current audience tier and spots 13-25 at the base rate plus 20%; Agent Toolbox no longer sells new Featured or sponsor placements.
 When all spots are taken, new buyers join a waitlist (email [email protected] ) and freed spots are offered in the order people joined.
 Each Featured spot runs for 30 days from the date your payment is approved.
 You can buy a single 30-day period, which simply ends, or choose auto-renew, which renews monthly at the price you locked in until you cancel.
