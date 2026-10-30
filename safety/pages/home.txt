@@ -19,7 +19,16 @@ Test regexes that extract structured data from LLM output.
 Open Regex Tester for Agent Outputs Regex Tester for Agent Outputs /"amount":\s*(\d+\.\d # )/g ✓ # matches $# = # $# = # $# = # ✕ line #: "amount": "#" (string) Need help? Click me × What it is Free browser tools and a hand-curated directory for building AI agents, also available to agents over a REST API and an MCP server.
 Who it's for Developers working with LLM APIs, tool calling and MCP.
 How it compares No signup, and the web tools run in your browser, so what you paste stays on your device.
-A directory worth bookmarking Frameworks, MCP servers, sandboxes, observability and more, hand-picked and verified.
+The Loop Latest posts All articles → Protocols · October #, # · # min Tracing agent runs with OpenTelemetry: the GenAI span names, attributes and privacy defaults OpenTelemetry now has a dedicated set of conventions for agents, model calls, tool calls and MCP traffic.
+Here is how the spans nest, which attributes matter, and why prompts stay out of your traces by default.
+Read article → Models · October #, # · # min Parallel tool calls: how OpenAI, Anthropic and Gemini batch them, and how to run the batch safely All three major model APIs can return several tool calls in one turn.
+Here is how each one signals a batch, how to turn it off, and how an agent harness should execute and answer the calls without breaking the loop.
+Read article → Costs · October #, # · # min Budget caps for agent runs: turn limits, token budgets and provider spend limits A runaway agent loop can cost ten times a normal run before anyone notices.
+Here is how to cap a single run with turn limits and token budgets, how provider spend limits behave when you hit them, and why your retry logic needs to know the difference.
+Read article → Protocols · October #, # · # min A#A # for agent builders: when your agent should call another agent instead of a tool The Agent#Agent protocol reached its first stable release this year.
+Here is how its Agent Cards, tasks, and update channels work, how it differs from MCP, and when it is worth adding to a system you already run.
+Read article → Field notes for people building AI agents.
+RSS A directory worth bookmarking Frameworks, MCP servers, sandboxes, observability and more, hand-picked and verified.
 Firecrawl Turn websites into LLM-ready markdown.
 LangChain Framework for building LLM apps and agents (Python/JS).
 LangGraph Stateful, graph-based agent orchestration.
