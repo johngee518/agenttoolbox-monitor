@@ -19,12 +19,12 @@ Test regexes that extract structured data from LLM output.
 Open Regex Tester for Agent Outputs Regex Tester for Agent Outputs /"amount":\s*(\d+\.\d # )/g ✓ # matches $# = # $# = # $# = # ✕ line #: "amount": "#" (string) Need help? Click me × What it is Free browser tools and a hand-curated directory for building AI agents, also available to agents over a REST API and an MCP server.
 Who it's for Developers working with LLM APIs, tool calling and MCP.
 How it compares No signup, and the web tools run in your browser, so what you paste stays on your device.
-The Loop Latest posts All articles → Models · November #, # · # min Running an agent on a local model: the tool-calling settings that quietly break it Ollama, vLLM and llama.cpp all speak OpenAI-style tool calling, but each has a default that can wreck an agent loop, from a #k context window to unconstrained arguments.
+The Loop Latest posts All articles → Protocols · November #, # · # min MCP extensions: how the opt-in layer works and which ones are worth adopting The #-#-# MCP revision made extensions an official part of the protocol and moved tasks out of core.
+Here is how extensions are negotiated, what the lifecycle stages promise, and how to decide whether your server should use Apps, Tasks, Skills or the auth extensions.
+Read article → Models · November #, # · # min Running an agent on a local model: the tool-calling settings that quietly break it Ollama, vLLM and llama.cpp all speak OpenAI-style tool calling, but each has a default that can wreck an agent loop, from a #k context window to unconstrained arguments.
 Here is what to change before you blame the model.
 Read article → Costs · November #, # · # min Model routing for agents: when sending easy work to a cheap model actually cuts the bill Routers, cascades and mid-run model switches, priced on real November # rates, including the prompt-cache penalty that makes switching models inside a loop more expensive than it looks.
 Read article → Craft · October #, # · # min Agent memory design: what to remember across sessions, where to keep it, and how to stop it rotting How Claude's memory tool, OpenAI Agents SDK sessions and LangGraph stores split short-term and long-term memory, and the design decisions they leave to you: what to write, when to write it, who can read it, and when to forget.
-Read article → Protocols · October #, # · # min Tracing agent runs with OpenTelemetry: the GenAI span names, attributes and privacy defaults OpenTelemetry now has a dedicated set of conventions for agents, model calls, tool calls and MCP traffic.
-Here is how the spans nest, which attributes matter, and why prompts stay out of your traces by default.
 Read article → Field notes for people building AI agents.
 RSS A directory worth bookmarking Frameworks, MCP servers, sandboxes, observability and more, hand-picked and verified.
 Firecrawl Turn websites into LLM-ready markdown.
