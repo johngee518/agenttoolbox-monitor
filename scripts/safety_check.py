@@ -339,6 +339,9 @@ NORMALIZE = [
 def main_text(body, path):
     m = re.search(r"(?is)<main\b.*?</main>", body)
     t = m.group(0) if m else body
+    # Drop marked volatile HTML regions (e.g. homepage Latest posts) before text extract.
+    for pat in CFG.get("html_ignore", {}).get(path, []):
+        t = re.sub(pat, " ", t)
     t = re.sub(r"(?is)<(script|style|noscript|svg|template)\b.*?</\1>", " ", t)
     t = re.sub(r"<[^>]+>", " ", t); t = html.unescape(t); t = re.sub(r"\s+", " ", t).strip()
     for pat, rep in NORMALIZE: t = re.sub(pat, rep, t, flags=re.I)

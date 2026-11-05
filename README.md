@@ -6,7 +6,7 @@ Runs at :41 every hour (outbound link scan at 00/06/12/18 UTC) on free GitHub Ac
 Checks: uptime, SSL expiry > 14 days, security headers (warnings; set `strict_headers` or `fail_on_missing_headers`
 in `safety/config.json` to make them failures), Google Safe Browsing (keyless Transparency Report lookup, rate-limited,
 warn-only on lookup errors) plus free URLhaus/OpenPhish feeds, outbound directory links (DNS, HTTP errors after retry, cross-domain redirects, parked/for-sale
-pages), page-text change detection vs `safety/baseline.json`, checkout links vs allowlist, gitleaks + live JS bundle
+pages), page-text change detection vs `safety/baseline.json` (homepage ignores the Latest posts / The Loop `latestloopsec` block via `html_ignore` + `text_ignore` in `safety/config.json` so daily posts do not false-alert), checkout links vs allowlist, gitleaks + live JS bundle
 secret scan, npm audit (site repo, needs `SITE_REPO_TOKEN`), pending community submissions, and **listed** community
 game/tool URL rechecks (every 6h full scan: HTTP/DNS/hijack/parked/allowlist for games/malware; weekly content
 fingerprint in `safety/listing_baseline.json` warns "re-review needed" on change, never fails).
