@@ -55,7 +55,8 @@
   ],
   "text_ignore": {
     "/": [
-      "\\d+(\\.\\d+)?"
+      "\\d+(\\.\\d+)?",
+      "The Loop\\s+Latest posts\\s+All articles\\s*\u2192.*?Field notes for people building AI agents\\.\\s*RSS"
     ]
   },
   "checkout_pages": [
@@ -87,5 +88,10 @@
   ],
   "listing_fingerprint_weekday": 0,
   "forbid_noindex": true,
-  "expect_server": "cloudflare"
+  "expect_server": "cloudflare",
+  "html_ignore": {
+    "/": [
+      "(?is)<section\\b[^>]*\\blatestloopsec\\b[^>]*>.*?</section>"
+    ]
+  }
 }
