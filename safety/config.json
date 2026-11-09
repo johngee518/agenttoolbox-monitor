@@ -57,6 +57,12 @@
     "/": [
       "\\d+(\\.\\d+)?",
       "The Loop\\s+Latest posts\\s+All articles\\s*\u2192.*?Field notes for people building AI agents\\.\\s*RSS"
+    ],
+    "/sponsor": [
+      "Last updated\\s*:?\\s*\\d{4}-\\d{2}-\\d{2}"
+    ],
+    "/pricing": [
+      "Last updated\\s*:?\\s*\\d{4}-\\d{2}-\\d{2}"
     ]
   },
   "checkout_pages": [
