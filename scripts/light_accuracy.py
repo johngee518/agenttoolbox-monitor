@@ -8,8 +8,17 @@ from email.utils import parsedate_to_datetime
 BASE = os.environ.get("SITE_BASE", "https://agenttoolbox.net").rstrip("/")
 UA = {"User-Agent": "AgentToolbox-LightCheck/1.0"}
 PAGES = ["/", "/directory", "/tools", "/pricing", "/blog", "/blog/rss.xml", "/games",
-         "/sponsor", "/sponsor-terms", "/privacy", "/terms", "/sitemap.xml",
+         "/privacy", "/terms", "/sitemap.xml",
          "/robots.txt", "/llms.txt", "/openapi.json"]
+# Retired sponsor/advertise URLs must 301 (do not follow).
+REDIRECTS = {
+    "/sponsor": "/",
+    "/sponsor/": "/",
+    "/advertise": "/",
+    "/advertise/": "/",
+    "/sponsor-terms": "/terms",
+    "/sponsor-terms/": "/terms",
+}
 MODEL_MAX_DAYS, BLOG_MAX_DAYS = 3, 2
 BAD = re.compile(r"(?i)(lorem ipsum|\blorem\b|\bPLACEHOLDER\b|>\s*NaN\s*<|>\s*undefined\s*<|\bNaN\b(?=[ %$])|\$NaN|\[insert )")
 SCRIPT = re.compile(r"(?is)<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>")
@@ -39,6 +48,32 @@ for p in PAGES:
         problems.append(f"{p} contains suspicious text: {m.group(0)!r}")
     else:
         ok.append(p)
+
+# Retired paths should 301, not serve a page.
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+def fetch_nofollow(path):
+    req = urllib.request.Request(BASE + path, headers=UA)
+    try:
+        with urllib.request.build_opener(_NoRedirect).open(req, timeout=20) as r:
+            return r.status, r.headers.get("Location") or r.headers.get("location") or ""
+    except urllib.error.HTTPError as e:
+        loc = e.headers.get("Location") or e.headers.get("location") or ""
+        return e.code, loc
+    except Exception as e:
+        return 0, str(e)
+for p, dest in REDIRECTS.items():
+    s, loc = fetch_nofollow(p)
+    # Location may be absolute or relative
+    tail = (loc or "").split("://", 1)[-1]
+    tail = tail[tail.find("/") :] if "://" in (loc or "") else (loc or "")
+    if s in (301, 308) and tail.rstrip("/") == dest.rstrip("/"):
+        ok.append(f"{p} {s} -> {dest}")
+    elif s in (301, 308) and (tail == dest or tail.rstrip("/")+"/" == dest or tail == dest.rstrip("/")+"/"):
+        ok.append(f"{p} {s} -> {dest}")
+    else:
+        problems.append(f"{p} expected 301 to {dest}, got {s} Location={loc!r}")
 
 # API tool list + model verified date
 today = datetime.now(timezone.utc).date()
